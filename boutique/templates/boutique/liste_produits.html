@@ -1,0 +1,75 @@
+{% extends 'boutique/base.html' %}
+
+{% block content %}
+    <h1>Produits disponibles</h1>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .produits-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .produit-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            width: 220px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .produit-card img {
+            max-width: 100%;
+            height: auto;
+        }
+        .produit-card h2 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .produit-card p {
+            margin: 5px 0;
+        }
+        form {
+            margin-top: 10px;
+        }
+    </style>
+
+    <div class="produits-grid">
+        {% for produit in produits %}
+            <div class="produit-card">
+                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+                <h2>{{ produit.nom }}</h2>
+                <p>Prix : {{ produit.prix }} fg</p>
+                <p>Stock : {{ produit.stock_restant }}</p>
+                <form method="post" action="{% url 'ajouter_au_panier' produit.id %}">
+                    {% csrf_token %}
+                    <label for="taille">Taille :</label>
+                    <select name="taille">
+                        <option value="S">S</option>
+                        <option value="M" selected>M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+
+                    <label for="couleur">Couleur :</label>
+                    <select name="couleur">
+                        <option value="noir" selected>Noir</option>
+                        <option value="blanc">Blanc</option>
+                        <option value="bleu">Bleu</option>
+                        <option value="rouge">Rouge</option>
+                    </select>
+
+                    <label for="quantite">Quantité :</label>
+                    <input type="number" name="quantite" min="1" value="1">
+
+                    <button type="submit">Ajouter au panier</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+

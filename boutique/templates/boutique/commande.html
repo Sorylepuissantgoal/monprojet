@@ -1,0 +1,38 @@
+<!-- templates/boutique/commande.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Passer une commande</title>
+</head>
+<body>
+    <h1>Formulaire de commande</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Téléphone :</label><br>
+        <input type="text" name="telephone" required><br><br>
+
+        <label>Email :</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <label>Quartier :</label><br>
+        <input type="text" name="quartier" required><br><br>
+
+        <label>Secteur :</label><br>
+        <input type="text" name="secteur" required><br><br>
+
+        <button type="submit">Valider la commande</button>
+    </form>
+
+    {% if code_confirmation %}
+        <h2>Commande confirmée !</h2>
+        <p>Votre code de confirmation : <strong>{{ code_confirmation }}</strong></p>
+        <a href="/" style="display: inline-block; margin-top: 10px; padding: 8px 12px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">
+            Retour à l'accueil
+          </a>
+          
+          
+          
+    {% endif %}
+</body>
+</html>

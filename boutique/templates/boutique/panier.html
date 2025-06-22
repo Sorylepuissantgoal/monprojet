@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Contenu du panier</title>
+</head>
+<body>
+    <h1>Contenu du panier</h1>
+    <ul>
+        {% for produit in produits %}
+            <li>
+                <h2>{{ produit.nom }}</h2>
+
+                <!-- Image du produit -->
+                <img src="{{ produit.image.url }}" width="200" alt="{{ produit.nom }}">
+
+                <p>Taille : {{ produit.taille }}</p>
+                <p>Couleur : {{ produit.couleur }}</p>
+                <p>Quantité : {{ produit.quantite }}</p>
+                <p>Prix unitaire : {{ produit.prix }} €</p>
+                <p>Sous-total : {{ produit.sous_total }} €</p>
+
+
+                <!-- Bouton pour retirer ce produit -->
+                <a href="{% url 'retirer_du_panier' produit.id %}">
+                    <button>Retirer</button>
+                </a>
+            </li>
+        {% empty %}
+            <p>Le panier est vide.</p>
+        {% endfor %}
+    </ul>
+
+    <h3>Total : {{ total }} €</h3>
+
+    <!-- Bouton pour vider tout le panier -->
+    <form method="post" action="{% url 'vider_panier' %}">
+        {% csrf_token %}
+        <button type="submit">Vider le panier</button>
+    </form>
+
+    <!-- Retour vers la liste des produits -->
+    <a href="{% url 'liste_produits' %}">
+        <button>Retour à la boutique</button>
+    </a>
+</body>
+</html>
+<!-- Bouton pour passer commande -->
+<form method="get" action="{% url 'commande' %}">
+    <button type="submit" style="
+        background-color: orange;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        margin-top: 20px;
+        font-weight: bold;
+    ">Commander</button>
+</form>
+
+
