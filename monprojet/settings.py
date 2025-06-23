@@ -135,6 +135,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'masocietevente3174@gmail.com'  # ← remplace par ton adresse Gmail
-EMAIL_HOST_PASSWORD = 'osfu tqbm vgew ioju'   # ← colle ici le mot de passe d'application
-
-
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')   # ← colle ici le mot de passe d'application
