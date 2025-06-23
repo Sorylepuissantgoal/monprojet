@@ -136,4 +136,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'masocietevente3174@gmail.com'  # ← remplace par ton adresse Gmail
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')   # ← colle ici le mot de passe d'application
-ALLOWED_HOSTS =['monprojet-xvg0.onrender.com']
+ALLOWED_HOSTS=['monprojet-xvg0.onrender.com']
