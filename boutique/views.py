@@ -131,13 +131,13 @@ def commande(request):
                 pass
 
         # Envoi du mail de confirmation
-        send_mail(
-            'Confirmation de commande',
-            f'Votre commande a été confirmée avec succès.\nVoici votre code : {code_confirmation}',
-            settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False
-        )
+        #send_mail(
+        #   'Confirmation de commande',
+        #    f'Votre commande a été confirmée avec succès.\nVoici votre code : {code_confirmation}',
+        #    settings.EMAIL_HOST_USER,
+        #    [email],
+        #    fail_silently=False
+        #)
 
         # Vider le panier
         request.session['panier'] = {}
