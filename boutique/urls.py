@@ -1,5 +1,7 @@
-from django.urls import path
-from .views import (
+from django.contrib import admin
+from django.urls import path, include
+
+from boutique.views import (
     liste_produits,
     ajouter_au_panier,
     voir_panier,
@@ -7,7 +9,7 @@ from .views import (
     vider_panier,
     liste_categories,
     produits_par_categorie,
-    commande
+    commande,
 )
 
 urlpatterns = [
@@ -19,7 +21,7 @@ urlpatterns = [
     path('categories/', liste_categories, name='liste_categories'),
     path('categorie/<int:categorie_id>/', produits_par_categorie, name='produits_par_categorie'),
     path('commande/', commande, name='commande'),
-
+    path('admin/', admin.site.urls),
 ]
 
 
