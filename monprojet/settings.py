@@ -142,4 +142,4 @@ import os
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-'whitenoise.middleware.WhiteNoiseMiddleware',
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
