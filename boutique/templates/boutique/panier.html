@@ -14,12 +14,12 @@
   .produit-item {
     background: white;
     padding: 15px;
-    border-radius: 10px;
-    box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.1);
     display: flex;
     gap: 20px;
     align-items: center;
-    margin-bottom: 15px;
   }
 
   .produit-item img {
@@ -38,8 +38,9 @@
 
   .actions {
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    margin-top: 10px;
+    align-items: flex-end;
   }
 
   .btn {
@@ -51,6 +52,8 @@
     cursor: pointer;
     transition: background-color 0.3s;
     font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
   }
 
   .btn:hover {
@@ -77,7 +80,6 @@
 </style>
 
 <div class="panier-container">
-
   {% if produits %}
     {% for produit in produits %}
       <div class="produit-item">
@@ -89,11 +91,9 @@
           <p><strong>Quantité :</strong> {{ produit.quantite }}</p>
           <p><strong>Prix unitaire :</strong> {{ produit.prix }} fg</p>
           <p><strong>Sous-total :</strong> {{ produit.sous_total }} fg</p>
-          <div class="actions">
-            <a href="{% url 'retirer_du_panier' produit.id produit.taille produit.couleur %}">
-              <button class="btn btn-red">Retirer</button>
-            </a>
-          </div>
+        </div>
+        <div class="actions">
+          <a href="{% url 'retirer_du_panier' produit.id produit.taille produit.couleur %}" class="btn btn-red">Retirer</a>
         </div>
       </div>
     {% endfor %}
@@ -111,15 +111,12 @@
   </form>
 
   <div style="text-align: center; margin-top: 15px;">
-    <a href="{% url 'liste_produits' %}">
-      <button class="btn">↩ Retour à la boutique</button>
-    </a>
+    <a href="{% url 'liste_produits' %}" class="btn">↩ Retour à la boutique</a>
   </div>
 
   <form method="get" action="{% url 'commande' %}" style="text-align: center; margin-top: 15px;">
     <button type="submit" class="btn btn-orange">Commander</button>
   </form>
-
 </div>
 
 {% endblock %}

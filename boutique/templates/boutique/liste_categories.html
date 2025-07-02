@@ -1,17 +1,18 @@
-{% extends "boutique/base.html" %}
-
+{% extends 'boutique/base.html' %}
 {% block content %}
-<h2>Liste des catégories</h2>
-<ul>
+  <h2 style="text-align: center; font-size: 2em; margin-bottom: 20px;">Liste des catégories</h2>
+
+  <ul style="list-style: none; padding: 0; text-align: center;">
     {% for categorie in categories %}
-        <li>
-            <a href="{% url 'produits_par_categorie' categorie.id %}">
-                {{ categorie.nom }}
-            </a>
-        </li>
+      <li style="margin: 10px 0;">
+        <a href="{% url 'produits_par_categorie' categorie.id %}" style="text-decoration: none; font-size: 1.2em; color: #007bff;">
+          {{ categorie.nom }}
+        </a>
+      </li>
     {% empty %}
-        <li>Aucune catégorie disponible.</li>
+      <li>Aucune catégorie disponible.</li>
     {% endfor %}
-</ul>
+  </ul>
 {% endblock %}
+
 

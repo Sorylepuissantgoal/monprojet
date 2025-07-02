@@ -120,3 +120,7 @@ def commande(request):
     return render(request, 'boutique/commande.html', {
         'code_confirmation': code_confirmation
     })
+def liste_categories(request):
+    # Exemple simple à adapter
+    categories = ['Chaussures', 'T-shirts', 'Pantalons']
+    return render(request, 'boutique/liste_categories.html', {'categories': categories})
