@@ -1,94 +1,92 @@
 from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import Produit, Commande, CommandeItem, Categorie
+from .models import Produit, Commande, CommandeItem
+from django.contrib import messages
 import random
 
-# Affichage de la liste des produits
 def liste_produits(request):
     produits = Produit.objects.all()
     return render(request, 'boutique/liste_produits.html', {'produits': produits})
 
-# Ajout d’un produit au panier
+
 def ajouter_au_panier(request, produit_id):
-    if request.method == "POST":
-        quantite = int(request.POST.get('quantite', 1))
-        taille = request.POST.get('taille', 'M')
-        couleur = request.POST.get('couleur', 'noir')
+    produit = Produit.objects.get(id=produit_id)
+    taille = request.POST.get('taille')
+    couleur = request.POST.get('couleur')
 
-        key = f"{produit_id}_{taille}_{couleur}"
-        panier = request.session.get('panier', {})
+    panier = request.session.get('panier', {})
 
-        if key in panier:
-            panier[key]['quantite'] += quantite
-        else:
-            panier[key] = {
-                'produit_id': produit_id,
-                'quantite': quantite,
-                'taille': taille,
-                'couleur': couleur
-            }
+    key = f"{produit_id}-{taille}-{couleur}"
+    if key in panier:
+        panier[key]['quantite'] += 1
+    else:
+        panier[key] = {
+            'produit_id': produit.id,
+            'taille': taille,
+            'couleur': couleur,
+            'quantite': 1
+        }
 
-        request.session['panier'] = panier
-        return redirect('liste_produits')
+    request.session['panier'] = panier
+    return redirect('voir_panier')
 
-# Affichage du panier
+
 def voir_panier(request):
     panier = request.session.get('panier', {})
     produits = []
-    total = 0
 
-    for key, item in panier.items():
+    for item in panier.values():
         try:
-            produit_id = item.get('produit_id')
-            if not produit_id or not str(produit_id).isdigit():
-                continue
-
-            produit = Produit.objects.get(id=int(produit_id))
-            produit.quantite = item['quantite']
+            produit = Produit.objects.get(id=item['produit_id'])
             produit.taille = item['taille']
             produit.couleur = item['couleur']
-            produit.sous_total = produit.quantite * produit.prix
-
+            produit.quantite = item['quantite']
+            produit.sous_total = produit.prix * produit.quantite
             produits.append(produit)
-            total += produit.sous_total
         except Produit.DoesNotExist:
             continue
 
-    return render(request, 'boutique/panier.html', {'produits': produits, 'total': total})
+    total = sum([p.sous_total for p in produits])
 
-# Suppression d’un produit du panier
-def retirer_du_panier(request, produit_id):
+    return render(request, 'boutique/panier.html', {
+        'produits': produits,
+        'total': total
+    })
+
+
+def retirer_du_panier(request, produit_id, taille, couleur):
     panier = request.session.get('panier', {})
-    if produit_id in panier:
-        del panier[produit_id]
-        request.session['panier'] = panier
+
+    for key in list(panier.keys()):
+        item = panier[key]
+        if (
+            item.get('produit_id') == produit_id and
+            item.get('taille') == taille and
+            item.get('couleur') == couleur
+        ):
+            del panier[key]
+            break
+
+    request.session['panier'] = panier
     return redirect('voir_panier')
 
-# Vider le panier
+
 def vider_panier(request):
     request.session['panier'] = {}
     return redirect('voir_panier')
 
-# Produits par catégorie
-def produits_par_categorie(request, categorie_id):
-    produits = Produit.objects.filter(categorie_id=categorie_id)
-    return render(request, 'boutique/liste_produits.html', {'produits': produits})
 
-# Liste des catégories
-def liste_categories(request):
-    categories = Categorie.objects.all()
-    return render(request, 'boutique/liste_categories.html', {'categories': categories})
-
-# Traitement d'une commande
 def commande(request):
     code_confirmation = None
-
     if request.method == "POST":
         telephone = request.POST.get('telephone')
         email = request.POST.get('email')
         quartier = request.POST.get('quartier')
         secteur = request.POST.get('secteur')
+
+        if not telephone or not quartier:
+            messages.error(request, "Veuillez remplir tous les champs requis.")
+            return redirect('voir_panier')
+
         code_confirmation = random.randint(100000, 999999)
 
         commande = Commande.objects.create(
@@ -100,47 +98,24 @@ def commande(request):
         )
 
         panier = request.session.get('panier', {})
-
-        # Ajout des produits à la commande
         for key, item in panier.items():
             try:
                 produit_id = item.get('produit_id')
                 if not produit_id or not str(produit_id).isdigit():
                     continue
-
                 produit = Produit.objects.get(id=int(produit_id))
                 CommandeItem.objects.create(
                     commande=commande,
                     produit=produit,
                     quantite=item['quantite']
                 )
-            except Produit.DoesNotExist:
-                continue
-
-        # Mise à jour du stock
-        for key, item in panier.items():
-            try:
-                produit_id = item.get('produit_id')
-                if not produit_id or not str(produit_id).isdigit():
-                    continue
-
-                produit = Produit.objects.get(id=int(produit_id))
                 produit.stock_initial -= item['quantite']
                 produit.save()
             except Produit.DoesNotExist:
-                pass
+                continue
 
-        # Envoi du mail de confirmation
-        #send_mail(
-        #   'Confirmation de commande',
-        #    f'Votre commande a été confirmée avec succès.\nVoici votre code : {code_confirmation}',
-        #    settings.EMAIL_HOST_USER,
-        #    [email],
-        #    fail_silently=False
-        #)
-
-        # Vider le panier
         request.session['panier'] = {}
+        messages.success(request, f"Commande confirmée ! Code : {code_confirmation}")
 
     return render(request, 'boutique/commande.html', {
         'code_confirmation': code_confirmation

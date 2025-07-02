@@ -1,75 +1,110 @@
 {% extends 'boutique/base.html' %}
-
 {% block content %}
-    <h1>Produits disponibles</h1>
+<h1 style="text-align: center; font-size: 2em; margin-bottom: 20px;">🛍️ Produits disponibles</h1>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+    }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .produits-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .produit-card {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-            width: 220px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .produit-card img {
-            max-width: 100%;
-            height: auto;
-        }
-        .produit-card h2 {
-            font-size: 18px;
-            margin: 10px 0;
-        }
-        .produit-card p {
-            margin: 5px 0;
-        }
-        form {
-            margin-top: 10px;
-        }
-    </style>
+    .produits-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
 
-    <div class="produits-grid">
-        {% for produit in produits %}
-            <div class="produit-card">
-                <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
-                <h2>{{ produit.nom }}</h2>
-                <p>Prix : {{ produit.prix }} fg</p>
-                <p>Stock : {{ produit.stock_restant }}</p>
-                <form method="post" action="{% url 'ajouter_au_panier' produit.id %}">
-                    {% csrf_token %}
-                    <label for="taille">Taille :</label>
-                    <select name="taille">
-                        <option value="S">S</option>
-                        <option value="M" selected>M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
-                    </select>
+    .product-card {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 15px;
+        text-align: center;
+        transition: transform 0.3s;
+    }
 
-                    <label for="couleur">Couleur :</label>
-                    <select name="couleur">
-                        <option value="noir" selected>Noir</option>
-                        <option value="blanc">Blanc</option>
-                        <option value="bleu">Bleu</option>
-                        <option value="rouge">Rouge</option>
-                    </select>
+    .product-card:hover {
+        transform: scale(1.03);
+    }
 
-                    <label for="quantite">Quantité :</label>
-                    <input type="number" name="quantite" min="1" value="1">
+    .product-card img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
 
-                    <button type="submit">Ajouter au panier</button>
-                </form>
-            </div>
-        {% endfor %}
+    .product-card h2 {
+        font-size: 1.2em;
+        margin: 10px 0;
+    }
+
+    .product-card p {
+        margin: 5px 0;
+        font-weight: 500;
+    }
+
+    form {
+        margin-top: 10px;
+    }
+
+    select, input[type="number"] {
+        width: 100%;
+        padding: 6px;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="produits-grid">
+    {% for produit in produits %}
+    <div class="product-card">
+        <img src="{{ produit.image.url }}" alt="{{ produit.nom }}">
+        <h2>{{ produit.nom }}</h2>
+        <p>💰 Prix : {{ produit.prix }} fg</p>
+        <p>📦 Stock : {{ produit.stock_restant }}</p>
+
+        <form method="post" action="{% url 'ajouter_au_panier' produit.id %}">
+            {% csrf_token %}
+            <label for="taille">Taille :</label>
+            <select name="taille">
+                <option value="S">S</option>
+                <option value="M" selected>M</option>
+                <option value="L">L</option>
+                <option value="XL">XL</option>
+            </select>
+
+            <label for="couleur">Couleur :</label>
+            <select name="couleur">
+                <option value="noir" selected>Noir</option>
+                <option value="blanc">Blanc</option>
+                <option value="bleu">Bleu</option>
+                <option value="rouge">Rouge</option>
+            </select>
+
+            <label for="quantite">Quantité :</label>
+            <input type="number" name="quantite" value="1" min="1">
+
+            <button type="submit">Ajouter au panier 🛒</button>
+        </form>
     </div>
+    {% endfor %}
+</div>
 {% endblock %}
-
-

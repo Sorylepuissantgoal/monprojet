@@ -1,61 +1,125 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Contenu du panier</title>
-</head>
-<body>
-    <h1>Contenu du panier</h1>
-    <ul>
-        {% for produit in produits %}
-            <li>
-                <h2>{{ produit.nom }}</h2>
+{% extends 'boutique/base.html' %}
+{% block content %}
 
-                <!-- Image du produit -->
-                <img src="{{ produit.image.url }}" width="200" alt="{{ produit.nom }}">
+<h1 style="text-align: center; font-size: 2em; margin-bottom: 20px;">🛒 Contenu du panier</h1>
 
-                <p>Taille : {{ produit.taille }}</p>
-                <p>Couleur : {{ produit.couleur }}</p>
-                <p>Quantité : {{ produit.quantite }}</p>
-                <p>Prix unitaire : {{ produit.prix }} €</p>
-                <p>Sous-total : {{ produit.sous_total }} €</p>
+<style>
+  .panier-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin: auto;
+  }
 
+  .produit-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 15px;
+  }
 
-                <!-- Bouton pour retirer ce produit -->
-                <a href="{% url 'retirer_du_panier' produit.id %}">
-                    <button>Retirer</button>
-                </a>
-            </li>
-        {% empty %}
-            <p>Le panier est vide.</p>
-        {% endfor %}
-    </ul>
+  .produit-item img {
+    width: 120px;
+    height: auto;
+    border-radius: 8px;
+  }
 
-    <h3>Total : {{ total }} €</h3>
+  .details {
+    flex: 1;
+  }
 
-    <!-- Bouton pour vider tout le panier -->
-    <form method="post" action="{% url 'vider_panier' %}">
-        {% csrf_token %}
-        <button type="submit">Vider le panier</button>
-    </form>
+  .details p {
+    margin: 4px 0;
+  }
 
-    <!-- Retour vers la liste des produits -->
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .btn {
+    background-color: #007bff;
+    color: white;
+    padding: 9px 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-weight: 500;
+  }
+
+  .btn:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-red {
+    background-color: #dc3545;
+  }
+
+  .btn-red:hover {
+    background-color: #a71d2a;
+  }
+
+  .btn-orange {
+    background-color: orange;
+  }
+
+  .total {
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 20px;
+  }
+</style>
+
+<div class="panier-container">
+
+  {% if produits %}
+    {% for produit in produits %}
+      <div class="produit-item">
+        <img src="{{ produit.image_url }}" alt="{{ produit.nom }}">
+        <div class="details">
+          <h3>{{ produit.nom }}</h3>
+          <p><strong>Taille :</strong> {{ produit.taille }}</p>
+          <p><strong>Couleur :</strong> {{ produit.couleur }}</p>
+          <p><strong>Quantité :</strong> {{ produit.quantite }}</p>
+          <p><strong>Prix unitaire :</strong> {{ produit.prix }} fg</p>
+          <p><strong>Sous-total :</strong> {{ produit.sous_total }} fg</p>
+          <div class="actions">
+            <a href="{% url 'retirer_du_panier' produit.id produit.taille produit.couleur %}">
+              <button class="btn btn-red">Retirer</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p style="text-align: center;">Votre panier est vide.</p>
+  {% endif %}
+
+  <div class="total">
+    <h3>Total : {{ total }} fg</h3>
+  </div>
+
+  <form method="post" action="{% url 'vider_panier' %}" style="text-align: center;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-red">Vider le panier</button>
+  </form>
+
+  <div style="text-align: center; margin-top: 15px;">
     <a href="{% url 'liste_produits' %}">
-        <button>Retour à la boutique</button>
+      <button class="btn">↩ Retour à la boutique</button>
     </a>
-</body>
-</html>
-<!-- Bouton pour passer commande -->
-<form method="get" action="{% url 'commande' %}">
-    <button type="submit" style="
-        background-color: orange;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        margin-top: 20px;
-        font-weight: bold;
-    ">Commander</button>
-</form>
+  </div>
 
+  <form method="get" action="{% url 'commande' %}" style="text-align: center; margin-top: 15px;">
+    <button type="submit" class="btn btn-orange">Commander</button>
+  </form>
 
+</div>
+
+{% endblock %}
